@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func main() {
@@ -18,6 +20,8 @@ func main() {
 		fmt.Sprintf("%s%s", baseDir, "dummy.txt.zip"),
 		fmt.Sprintf("%s%s", baseDir, "dummy.txt.tar"),
 		fmt.Sprintf("%s%s", baseDir, "dummy_dir.tar"),
+		fmt.Sprintf("%s%s", baseDir, "dummy_dir_unix.tar"),
+		fmt.Sprintf("%s%s", baseDir, "dummy_dir_unix_2.tar"),
 	}
 
 	fmt.Println(fmt.Sprintf("Apparent zip file sequence: %v", []byte("\x50\x4B\x03\x04")))
@@ -44,11 +48,22 @@ func main() {
 			_, _ = fh.Seek(0, 0)
 			fmt.Println(fileName)
 			fmt.Println(fmt.Sprintf("first 4 (zip): %v", (tmpBuff[:4])))
+			fmt.Println(fmt.Sprintf("first 4 (zip): %v", byteToHex(tmpBuff[:4])))
 			fmt.Println(fmt.Sprintf("first 3 (gzip): %v", (tmpBuff[:3])))
+			fmt.Println(fmt.Sprintf("first 3 (gzip): %v", byteToHex(tmpBuff[:3])))
 			fmt.Println(fmt.Sprintf("first 8 (tar): %v", (tmpBuff[:8])))
+			fmt.Println(fmt.Sprintf("first 8 (tar): %v", byteToHex(tmpBuff[:8])))
 
 			_ = fh.Close()
 		}
 	}
 
+}
+
+func byteToHex(b []byte) string {
+	var res strings.Builder
+	for _, d := range b {
+		res.WriteString("\\x" + strconv.FormatInt(int64(d), 16))
+	}
+	return res.String()
 }
